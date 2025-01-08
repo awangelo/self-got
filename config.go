@@ -46,3 +46,7 @@ func (c *config) createConfig() error {
 
 	return nil
 }
+
+func (c *config) isValid() bool {
+	return c.Token != "" && c.Prefix != ""
+}
