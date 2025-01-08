@@ -71,14 +71,14 @@ func main() {
 		if err = testToken(); err != nil {
 			log.Fatal(err)
 		}
-
 		label.SetText("Token is valid, connecting to Discord...")
+
 		loginTime = time.Now()
+		label.SetText("Connected")
 		connectToDiscord()
 
 		prepareCommands()
 
-		dg.AddHandlerOnce(handleReady)
 		dg.AddHandler(handleMessageCreate)
 	}()
 
