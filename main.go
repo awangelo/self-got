@@ -4,15 +4,21 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/container"
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
+	"github.com/bwmarrin/discordgo"
 )
 
-var cfg config
+var (
+	cfg       config
+	dg        *discordgo.Session
+	loginTime time.Time
+)
 
 func main() {
 	a := app.New()
@@ -32,13 +38,36 @@ func main() {
 		label.SetText("Config file not found, creating one...")
 
 		handleTokenInput(content, label, func() {
-			handlePrefixInput(content, label)
+			handlePrefixInput(content, label, func() {
+				err := cfg.createConfig()
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println("config file created")
+			})
 		})
 	case err != nil:
 		log.Fatal(err)
 	default:
 		fmt.Println("config file found")
 	}
+
+	if !cfg.isValid() {
+		log.Fatal("config file is invalid")
+		return
+	}
+
+	fmt.Println("testing token...")
+	centeredLabel("Testing token...")
+	if err = testToken(); err != nil {
+		log.Fatal(err)
+	}
+
+	loginTime = time.Now()
+	connectToDiscord()
+
+	dg.AddHandlerOnce(handleReady)
+	dg.AddHandler(handleMessageCreate)
 
 	w.ShowAndRun()
 }
@@ -53,10 +82,8 @@ func setupWindow(w fyne.Window) {
 func handleTokenInput(content *fyne.Container, label *widget.Label, onComplete func()) {
 	tokenEntry := widget.NewPasswordEntry()
 	saveButton := widget.NewButton("Save", func() {
-		//
-		if err := tokenEntry.Validator(tokenEntry.Text); err != nil {
+		if tokenEntry.Text == "" {
 			fmt.Println("invalid token")
-			label.SetText("Invalid token")
 			return
 		}
 		cfg.Token = tokenEntry.Text
@@ -81,7 +108,7 @@ func handleTokenInput(content *fyne.Container, label *widget.Label, onComplete f
 	content.Refresh()
 }
 
-func handlePrefixInput(content *fyne.Container, label *widget.Label) {
+func handlePrefixInput(content *fyne.Container, label *widget.Label, onComplete func()) {
 	prefixEntry := widget.NewEntry()
 	saveButton := widget.NewButton("Save", func() {
 		cfg.Prefix = "\\"
@@ -91,6 +118,7 @@ func handlePrefixInput(content *fyne.Container, label *widget.Label) {
 
 		content.Objects = []fyne.CanvasObject{label}
 		content.Refresh()
+		onComplete()
 	})
 
 	// Fixed button width so it doesnt grow
