@@ -2,10 +2,12 @@ module self_got
 
 go 1.23.4
 
-require fyne.io/fyne v1.4.3
+require (
+	fyne.io/fyne v1.4.3
+	github.com/bwmarrin/discordgo v0.28.1
+)
 
 require (
-	github.com/bwmarrin/discordgo v0.28.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/fyne-io/mobile v0.1.2 // indirect
