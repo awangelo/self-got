@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -31,13 +30,6 @@ func connectToDiscord() {
 	if err := dg.Open(); err != nil {
 		fmt.Println(err)
 	}
-	defer dg.Close()
-}
-
-func handleReady(s *discordgo.Session, m *discordgo.Ready) {
-	fmt.Printf("log-in successful!\nlog-in time: %.2f\n", time.Since(loginTime).Seconds())
-	fmt.Printf("Joined %d guilds\n", len(m.Guilds))
-	fmt.Printf("m.PrivateChannels: %v\n", m.PrivateChannels)
 }
 
 func handleMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -45,5 +37,5 @@ func handleMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	// parseCommand(s, m, strings.TrimPrefix(m.Content, cfg.Prefix))
+	parseCommand(s, m, strings.TrimPrefix(m.Content, cfg.Prefix))
 }
