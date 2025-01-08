@@ -67,12 +67,12 @@ func main() {
 		}
 
 		fmt.Println("testing token...")
-		centeredLabel("Testing token...")
+		label.SetText("Testing token...")
 		if err = testToken(); err != nil {
 			log.Fatal(err)
 		}
 
-		centeredLabel("Token is valid, connecting to Discord...")
+		label.SetText("Token is valid, connecting to Discord...")
 		loginTime = time.Now()
 		connectToDiscord()
 
