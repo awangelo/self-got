@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -10,7 +11,8 @@ import (
 func testToken() error {
 	fmt.Println("trying to login...")
 
-	dg, err := discordgo.New(cfg.Token)
+	var err error
+	dg, err = discordgo.New(cfg.Token)
 	if err != nil {
 		return err
 	}
@@ -39,11 +41,9 @@ func handleReady(s *discordgo.Session, m *discordgo.Ready) {
 }
 
 func handleMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID == s.State.User.ID {
+	if m.Author.ID != s.State.User.ID || !strings.HasPrefix(m.Content, cfg.Prefix) {
 		return
 	}
 
-	if m.Content == "ping" {
-		s.ChannelMessageSend(m.ChannelID, "pong")
-	}
+	// parseCommand(s, m, strings.TrimPrefix(m.Content, cfg.Prefix))
 }
