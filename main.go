@@ -30,44 +30,57 @@ func main() {
 	content := container.NewCenter(label)
 	w.SetContent(content)
 
-	err := cfg.loadConfig()
-	switch {
-	case os.IsNotExist(err):
-		// create config
-		fmt.Println("config file not found, creating one")
-		label.SetText("Config file not found, creating one...")
+	go func() {
+		err := cfg.loadConfig()
+		switch {
+		case os.IsNotExist(err):
+			// create config
+			fmt.Println("config file not found, creating one")
+			label.SetText("Config file not found, creating one...")
 
-		handleTokenInput(content, label, func() {
-			handlePrefixInput(content, label, func() {
-				err := cfg.createConfig()
-				if err != nil {
-					log.Fatal(err)
-				}
-				fmt.Println("config file created")
+			tokenDone := make(chan struct{})
+			prefixDone := make(chan struct{})
+
+			handleTokenInput(content, label, func() {
+				handlePrefixInput(content, label, func() {
+					err := cfg.createConfig()
+					if err != nil {
+						log.Fatal(err)
+					}
+					fmt.Println("config file created")
+					close(prefixDone)
+				})
+				close(tokenDone)
 			})
-		})
-	case err != nil:
-		log.Fatal(err)
-	default:
-		fmt.Println("config file found")
-	}
 
-	if !cfg.isValid() {
-		log.Fatal("config file is invalid")
-		return
-	}
+			<-tokenDone
+			<-prefixDone
+		case err != nil:
+			log.Fatal(err)
+		default:
+			fmt.Println("config file found")
+		}
 
-	fmt.Println("testing token...")
-	centeredLabel("Testing token...")
-	if err = testToken(); err != nil {
-		log.Fatal(err)
-	}
+		if !cfg.isValid() {
+			log.Fatal("config file is invalid")
+			return
+		}
 
-	loginTime = time.Now()
-	connectToDiscord()
+		fmt.Println("testing token...")
+		centeredLabel("Testing token...")
+		if err = testToken(); err != nil {
+			log.Fatal(err)
+		}
 
-	dg.AddHandlerOnce(handleReady)
-	dg.AddHandler(handleMessageCreate)
+		centeredLabel("Token is valid, connecting to Discord...")
+		loginTime = time.Now()
+		connectToDiscord()
+
+		prepareCommands()
+
+		dg.AddHandlerOnce(handleReady)
+		dg.AddHandler(handleMessageCreate)
+	}()
 
 	w.ShowAndRun()
 }
