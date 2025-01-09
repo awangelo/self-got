@@ -54,3 +54,13 @@ func parseCommand(s *discordgo.Session, m *discordgo.MessageCreate, message stri
 func (c command) add() {
 	commMap[c.Name] = c
 }
+
+func getCommandNames() []string {
+	commandNames := make([]string, 0, len(commMap))
+
+	for name := range commMap {
+		commandNames = append(commandNames, name)
+	}
+
+	return commandNames
+}
