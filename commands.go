@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"runtime"
+	execCommand "self_got/exec"
 	"strings"
 	"time"
 
@@ -27,10 +28,17 @@ func prepareCommands() {
 			"Example:" + "\n\n" + "Running for 5m1.793249138s\nUsing: 3 MB",
 		Exec: infoCommand,
 	}.add()
+	// command{
+	// 	Name: "bounce",
+	// 	Help: "Generates a bouncing gif based on the given image/url",
+	// 	Exec: bounceCommand,
+	// }.add()
 	command{
-		Name: "bounce",
-		Help: "Generates a bouncing gif based on the given image/url",
-		Exec: bounceCommand,
+		Name: "remind",
+		Help: "Reminds the user after a given time" + "\n\n" +
+			"Example:" + "\n" + "\\remind 5m bath the cat" + "\n\n" +
+			"Response after the time:" + "\n" + "@user I'm reminding you about: bath the cat",
+		Exec: execCommand.Remind,
 	}.add()
 }
 
