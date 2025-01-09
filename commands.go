@@ -40,6 +40,11 @@ func prepareCommands() {
 			"Response after the time:" + "\n" + "@user I'm reminding you about: bath the cat",
 		Exec: execCommand.Remind,
 	}.add()
+	command{
+		Name: "ocr",
+		Help: "Performs OCR on the given image",
+		Exec: execCommand.Ocr,
+	}.add()
 }
 
 func infoCommand(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
