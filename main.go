@@ -74,12 +74,13 @@ func main() {
 		label.SetText("Token is valid, connecting to Discord...")
 
 		loginTime = time.Now()
-		label.SetText("Connected")
+		label.SetText("Connected, close this window to exit")
 		connectToDiscord()
 
 		prepareCommands()
 
 		dg.AddHandler(handleMessageCreate)
+		finalWindow(w)
 	}()
 
 	w.ShowAndRun()
@@ -111,7 +112,7 @@ func handleTokenInput(content *fyne.Container, label *widget.Label, onComplete f
 
 	content.Objects = []fyne.CanvasObject{
 		container.NewVBox(
-			centeredLabel("Please enter your token:"),
+			centeredLabel("Enter your token:"),
 			layout.NewSpacer(),
 			tokenEntry,
 			layout.NewSpacer(),
@@ -148,6 +149,36 @@ func handlePrefixInput(content *fyne.Container, label *widget.Label, onComplete 
 		),
 	}
 	content.Refresh()
+}
+
+func finalWindow(w fyne.Window) {
+	commandNames := getCommandNames()
+
+	// Create and populate a list with the command names
+	list := widget.NewList(
+		func() int {
+			return len(commandNames)
+		},
+		func() fyne.CanvasObject {
+			return widget.NewLabel("")
+		},
+		func(i widget.ListItemID, o fyne.CanvasObject) {
+			o.(*widget.Label).SetText(commandNames[i])
+		},
+	)
+
+	helpLabel := widget.NewLabel("Select a command to see its help")
+
+	// Update the help text when a command is selected
+	list.OnSelected = func(id widget.ListItemID) {
+		helpLabel.SetText(commMap[commandNames[id]].Help)
+	}
+
+	// Horizontal split to hold the list and the help text
+	split := container.NewHSplit(list, helpLabel)
+	split.Offset = 0.3
+
+	w.SetContent(split)
 }
 
 func centeredLabel(text string) *widget.Label {
