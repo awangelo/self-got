@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"runtime"
 	"strings"
 	"time"
@@ -22,8 +23,14 @@ var (
 func prepareCommands() {
 	command{
 		Name: "info",
-		Help: "Displays running time and memory usage of the selfbot" + "\n\n" + "Example:" + "\n\n" + "Running for 5m1.793249138s\nUsing: 3 MB",
+		Help: "Displays running time and memory usage of the selfbot" + "\n\n" +
+			"Example:" + "\n\n" + "Running for 5m1.793249138s\nUsing: 3 MB",
 		Exec: infoCommand,
+	}.add()
+	command{
+		Name: "bounce",
+		Help: "Generates a bouncing gif based on the given image/url",
+		Exec: bounceCommand,
 	}.add()
 }
 
@@ -38,8 +45,8 @@ func parseCommand(s *discordgo.Session, m *discordgo.MessageCreate, message stri
 	msglist := strings.Fields(message)
 	command := msglist[0]
 
-	fmt.Printf("got: %v\n", msglist)
-	fmt.Printf("replied %v to: %v\n", command, m.Author.Username)
+	log.Printf("got: %v\n", msglist)
+	log.Printf("replied %v to: %v\n", command, m.Author.Username)
 
 	if command == commMap[command].Name {
 		commMap[command].Exec(s, m, msglist[1:])
