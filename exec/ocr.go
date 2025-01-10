@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/otiai10/gosseract"
+	"github.com/otiai10/gosseract/v2"
 )
 
 func Ocr(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
-	if m.Embeds == nil {
+	if len(m.Attachments) == 0 {
 		s.ChannelMessageSend(m.ChannelID, "You need to provide an image")
 		return
 	}
@@ -21,7 +21,7 @@ func Ocr(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 	client := gosseract.NewClient()
 	defer client.Close()
 
-	image := m.Embeds[0].Image.URL
+	image := m.Attachments[0].URL
 	resp, err := http.Get(image)
 	if err != nil {
 		s.ChannelMessageSend(m.ChannelID, "Failed to download image")
@@ -34,9 +34,8 @@ func Ocr(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	lang := args[0]
-	if lang == "" {
-		client.SetLanguage(lang)
+	if len(args) == 1 {
+		client.SetLanguage(args[0])
 	}
 
 	client.SetImageFromBytes(imgBytes)
