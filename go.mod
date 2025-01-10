@@ -5,9 +5,8 @@ go 1.23.4
 require (
 	fyne.io/fyne v1.4.3
 	github.com/bwmarrin/discordgo v0.28.1
+	github.com/otiai10/gosseract/v2 v2.4.1
 )
-
-require github.com/otiai10/mint v1.6.3 // indirect
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -18,7 +17,6 @@ require (
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/otiai10/gosseract v2.2.1+incompatible
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
