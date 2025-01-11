@@ -7,32 +7,31 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func testToken() error {
+func createSession(cfg *config) (*discordgo.Session, error) {
 	fmt.Println("trying to login...")
 
-	var err error
-	dg, err = discordgo.New(cfg.Token)
+	dg, err := discordgo.New(cfg.Token)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if _, err = dg.User("@me"); err != nil {
-		return err
+		return nil, err
 	}
 
 	fmt.Println("token is valid!")
+	return dg, nil
+}
 
+func connectToWS(dg *discordgo.Session) error {
+	fmt.Println("opening websocket...")
+	if err := dg.Open(); err != nil {
+		return fmt.Errorf("failed to open connection: %v", err)
+	}
 	return nil
 }
 
-func connectToDiscord() {
-	fmt.Println("opening websocket...")
-	if err := dg.Open(); err != nil {
-		fmt.Println(err)
-	}
-}
-
-func handleMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func handleMessageCreate(cfg *config, s *discordgo.Session, m *discordgo.MessageCreate) {
 	if !strings.HasPrefix(m.Content, cfg.Prefix) {
 		return
 	}
