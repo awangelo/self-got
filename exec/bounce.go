@@ -5,23 +5,37 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"net/url"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/davidbyttow/govips/v2/vips"
 )
 
 func Bounce(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
-	if len(m.Attachments) == 0 {
-		s.ChannelMessageSend(m.ChannelID, "You need to provide an image")
-		return
-	}
-	if len(args) > 0 {
+	var imageURL string
+
+	if len(args) > 1 {
 		s.ChannelMessageSend(m.ChannelID, "Too many arguments")
 		return
 	}
 
+	if len(args) == 1 {
+		// Validate URL
+		_, err := url.ParseRequestURI(args[0])
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, "Invalid URL provided")
+			return
+		}
+		imageURL = args[0]
+	} else if len(m.Attachments) > 0 {
+		imageURL = m.Attachments[0].URL
+	} else {
+		s.ChannelMessageSend(m.ChannelID, "You need to provide an image or URL")
+		return
+	}
+
 	go func() {
-		resp, err := http.Get(m.Attachments[0].URL)
+		resp, err := http.Get(imageURL)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, "Failed to download image")
 			return
