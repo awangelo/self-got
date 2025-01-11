@@ -38,25 +38,30 @@ func main() {
 	w := a.NewWindow("seld got")
 	setupWindow(w)
 
-	fmt.Println("trying to find the config file...")
-	label := centeredLabel("Trying to find the config file...")
-	content := container.NewCenter(label)
-	w.SetContent(content)
+	return &UIMode{
+		cfg:    cfg,
+		window: w,
+		label:  centeredLabel("Trying to find the config file..."),
+	}
+}
+
+func (u *UIMode) run() error {
+	content := container.NewCenter(u.label)
+	u.window.SetContent(content)
 
 	go func() {
-		err := cfg.loadConfig()
+		err := u.cfg.loadConfig()
 		switch {
 		case os.IsNotExist(err):
-			// create config
 			fmt.Println("config file not found, creating one")
-			label.SetText("Config file not found, creating one...")
+			u.label.SetText("Config file not found, creating one...")
 
 			tokenDone := make(chan struct{})
 			prefixDone := make(chan struct{})
 
-			handleTokenInput(content, label, func() {
-				handlePrefixInput(content, label, func() {
-					err := cfg.createConfig()
+			handleTokenInput(content, u.label, u.cfg, func() {
+				handlePrefixInput(content, u.label, u.cfg, func() {
+					err := u.cfg.createConfig()
 					if err != nil {
 						log.Fatal(err)
 					}
@@ -68,35 +73,74 @@ func main() {
 
 			<-tokenDone
 			<-prefixDone
+
 		case err != nil:
 			log.Fatal(err)
 		default:
 			fmt.Println("config file found")
 		}
 
-		if !cfg.isValid() {
+		if !u.cfg.isValid() {
 			log.Fatal("config file is invalid")
 			return
 		}
 
 		fmt.Println("testing token...")
-		label.SetText("Testing token...")
-		if err = testToken(); err != nil {
+		u.label.SetText("Testing token...")
+
+		u.dg, err = createSession(u.cfg)
+		if err != nil {
 			log.Fatal(err)
 		}
-		label.SetText("Token is valid, connecting to Discord...")
 
-		loginTime = time.Now()
-		label.SetText("Connected, close this window to exit")
-		connectToDiscord()
+		u.label.SetText("Token is valid, connecting to Discord...")
+
+		if err := connectToWS(u.dg); err != nil {
+			log.Fatal(err)
+		}
+
+		u.loginTime = time.Now()
+		u.label.SetText("Connected, close this window to exit")
 
 		prepareCommands()
-
-		dg.AddHandler(handleMessageCreate)
-		finalWindow(w)
+		u.dg.AddHandler(messageCreateWrapper(u.cfg))
+		finalWindow(u.window)
 	}()
 
-	w.ShowAndRun()
+	u.window.ShowAndRun()
+	return nil
+}
+
+func (c *CLIMode) run() error {
+	fmt.Println("running in no-ui mode")
+
+	var err error
+	if err = c.cfg.loadConfig(); err != nil {
+		return fmt.Errorf("failed to load config: %v", err)
+	}
+
+	if !c.cfg.isValid() {
+		return fmt.Errorf("invalid config")
+	}
+
+	c.dg, err = createSession(c.cfg)
+	if err != nil {
+		return fmt.Errorf("failed to create session: %v", err)
+	}
+
+	if err = connectToWS(c.dg); err != nil {
+		return fmt.Errorf("failed to connect to websocket: %v", err)
+	}
+
+	c.loginTime = time.Now()
+	prepareCommands()
+	c.dg.AddHandler(messageCreateWrapper(c.cfg))
+
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM)
+	<-sc
+
+	return nil
 }
 
 func setupWindow(w fyne.Window) {
@@ -104,64 +148,6 @@ func setupWindow(w fyne.Window) {
 	w.Resize(fyne.NewSize(600, 400))
 	w.SetFixedSize(true)
 	w.CenterOnScreen()
-}
-
-func handleTokenInput(content *fyne.Container, label *widget.Label, onComplete func()) {
-	tokenEntry := widget.NewPasswordEntry()
-	saveButton := widget.NewButton("Save", func() {
-		if tokenEntry.Text == "" {
-			fmt.Println("invalid token")
-			return
-		}
-		cfg.Token = tokenEntry.Text
-		content.Objects = []fyne.CanvasObject{label}
-		content.Refresh()
-		onComplete()
-	})
-
-	// Fixed button width so it doesnt grow
-	saveButtonContainer := container.NewCenter(saveButton)
-	saveButtonContainer.Resize(fyne.NewSize(100, saveButton.MinSize().Height))
-
-	content.Objects = []fyne.CanvasObject{
-		container.NewVBox(
-			centeredLabel("Enter your token:"),
-			layout.NewSpacer(),
-			tokenEntry,
-			layout.NewSpacer(),
-			saveButtonContainer,
-		),
-	}
-	content.Refresh()
-}
-
-func handlePrefixInput(content *fyne.Container, label *widget.Label, onComplete func()) {
-	prefixEntry := widget.NewEntry()
-	saveButton := widget.NewButton("Save", func() {
-		cfg.Prefix = "\\"
-		if prefixEntry.Text != "" {
-			cfg.Prefix = prefixEntry.Text
-		}
-
-		content.Objects = []fyne.CanvasObject{label}
-		content.Refresh()
-		onComplete()
-	})
-
-	// Fixed button width so it doesnt grow
-	saveButtonContainer := container.NewCenter(saveButton)
-	saveButtonContainer.Resize(fyne.NewSize(100, saveButton.MinSize().Height))
-
-	content.Objects = []fyne.CanvasObject{
-		container.NewVBox(
-			centeredLabel("Please enter your prefix, default is \"\\\" (e.g. \\help):"),
-			layout.NewSpacer(),
-			prefixEntry,
-			layout.NewSpacer(),
-			saveButtonContainer,
-		),
-	}
-	content.Refresh()
 }
 
 func finalWindow(w fyne.Window) {
