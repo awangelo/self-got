@@ -34,8 +34,25 @@ type CLIMode struct {
 }
 
 func main() {
+	noUI := len(os.Args) > 1 && (os.Args[1] == "--noui" || os.Args[1] == "--no-ui")
+
+	var cfg config
+	var runner Runner
+
+	if noUI {
+		runner = &CLIMode{cfg: &cfg}
+	} else {
+		runner = NewUI(&cfg)
+	}
+
+	if err := runner.run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func NewUI(cfg *config) *UIMode {
 	a := app.New()
-	w := a.NewWindow("seld got")
+	w := a.NewWindow("self got")
 	setupWindow(w)
 
 	return &UIMode{
