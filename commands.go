@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"log"
 	"runtime"
-	execCommand "self_got/exec"
 	"strings"
 	"time"
+
+	execCommand "github.com/awangelo/self-got/exec"
 
 	"github.com/bwmarrin/discordgo"
 )

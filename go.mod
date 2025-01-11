@@ -1,4 +1,4 @@
-module self_got
+module github.com/awangelo/self-got
 
 go 1.23.4
 
