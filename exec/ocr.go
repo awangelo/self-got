@@ -10,31 +10,18 @@ import (
 
 func Ocr(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 	var imageURL string
-	switch {
-	case len(m.Attachments) == 0:
-		s.ChannelMessageSend(m.ChannelID, "You need to provide an image")
-		return
 
-	case len(args) > 1:
+	if len(args) > 1 {
 		s.ChannelMessageSend(m.ChannelID, "Too many arguments")
 		return
-
-	// User provided an attachment
-	case m.MessageReference != nil:
-		repliedMessage, err := s.ChannelMessage(m.ChannelID, m.MessageReference.MessageID)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, "Failed to fetch replied message")
-			return
-		}
-		if len(repliedMessage.Attachments) > 0 {
-			imageURL = repliedMessage.Attachments[0].URL
-		} else {
-			s.ChannelMessageSend(m.ChannelID, "Replied message has no attachments")
-			return
-		}
 	}
 
-	imageURL = m.Attachments[0].URL
+	// User provided an attachment
+	imageURL, err := getImageFromMessage(m)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, err.Error())
+		return
+	}
 
 	client := gosseract.NewClient()
 	defer client.Close()
