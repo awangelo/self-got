@@ -14,22 +14,39 @@ import (
 func Bounce(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 	var imageURL string
 
-	if len(args) > 1 {
-		s.ChannelMessageSend(m.ChannelID, "Too many arguments")
-		return
-	}
+	switch {
+	// User replied to a message
+	case m.MessageReference != nil:
+		repliedMessage, err := s.ChannelMessage(m.ChannelID, m.MessageReference.MessageID)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, "Failed to fetch replied message")
+			return
+		}
+		if len(repliedMessage.Attachments) > 0 {
+			imageURL = repliedMessage.Attachments[0].URL
+		} else {
+			s.ChannelMessageSend(m.ChannelID, "Replied message has no attachments")
+			return
+		}
 
-	if len(args) == 1 {
-		// Validate URL
+	// User provided a URL
+	case len(args) == 1:
 		_, err := url.ParseRequestURI(args[0])
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, "Invalid URL provided")
 			return
 		}
 		imageURL = args[0]
-	} else if len(m.Attachments) > 0 {
+
+		// User provided an attachment
+	case len(m.Attachments) > 0:
 		imageURL = m.Attachments[0].URL
-	} else {
+
+	case len(args) > 1:
+		s.ChannelMessageSend(m.ChannelID, "Too many arguments")
+		return
+
+	default:
 		s.ChannelMessageSend(m.ChannelID, "You need to provide an image or URL")
 		return
 	}
