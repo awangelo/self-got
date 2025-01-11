@@ -4,21 +4,34 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/container"
-	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"github.com/bwmarrin/discordgo"
 )
 
-var (
-	cfg       config
+type Runner interface {
+	run() error
+}
+
+type UIMode struct {
+	cfg       *config
+	dg        *discordgo.Session
+	window    fyne.Window
+	label     *widget.Label
+	loginTime time.Time
+}
+
+type CLIMode struct {
+	cfg       *config
 	dg        *discordgo.Session
 	loginTime time.Time
-)
+}
 
 func main() {
 	a := app.New()
