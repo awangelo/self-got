@@ -50,8 +50,16 @@ func prepareCommands() {
 func infoCommand(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 	var mem runtime.MemStats
 	runtime.ReadMemStats(&mem)
-	memUsage := fmt.Sprintf("Running for %v\nUsing: %v MB\n", time.Since(loginTime), mem.Alloc/1024/1024)
-	s.ChannelMessageSend(m.ChannelID, memUsage)
+
+	memInfo := fmt.Sprintf(
+		"HeapAlloc: %v MB\n"+
+			"Sys: %v MB\n"+
+			"Running for: %v\n",
+		mem.HeapAlloc/1024/1024,
+		mem.Sys/1024/1024,
+		time.Since(loginTime))
+
+	s.ChannelMessageSend(m.ChannelID, memInfo)
 }
 
 func parseCommand(s *discordgo.Session, m *discordgo.MessageCreate, message string) {
