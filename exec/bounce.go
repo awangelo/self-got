@@ -13,43 +13,27 @@ import (
 
 func Bounce(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 	var imageURL string
+	var err error
 
-	switch {
-	// User replied to a message
-	case m.MessageReference != nil:
-		repliedMessage, err := s.ChannelMessage(m.ChannelID, m.MessageReference.MessageID)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, "Failed to fetch replied message")
-			return
-		}
-		if len(repliedMessage.Attachments) > 0 {
-			imageURL = repliedMessage.Attachments[0].URL
-		} else {
-			s.ChannelMessageSend(m.ChannelID, "Replied message has no attachments")
-			return
-		}
-
-	// User provided a URL
-	case len(args) == 1:
-		_, err := url.ParseRequestURI(args[0])
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, "Invalid URL provided")
-			return
-		}
-		imageURL = args[0]
-
-		// User provided an attachment
-	case len(m.Attachments) > 0:
-		imageURL = m.Attachments[0].URL
-
-	case len(args) > 1:
+	if len(args) > 1 {
 		s.ChannelMessageSend(m.ChannelID, "Too many arguments")
 		return
-
-	default:
-		s.ChannelMessageSend(m.ChannelID, "You need to provide an image or URL")
-		return
 	}
+
+	imageURL, err = getImageFromMessage(m)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, err.Error())
+		return
+	} else if imageURL == "" {
+		imageURL = args[0]
+		_, err = url.ParseRequestURI(imageURL)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, "You need to provide a valid image or URL")
+			return
+		}
+	}
+
+	imageName := getImageNameFromMessage(m)
 
 	go func() {
 		resp, err := http.Get(imageURL)
@@ -135,7 +119,6 @@ func Bounce(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 			log.Fatal(err)
 		}
 
-		name := m.Attachments[0].Filename
-		s.ChannelFileSend(m.ChannelID, name+".gif", bytes.NewReader(gifBytes))
+		s.ChannelFileSend(m.ChannelID, imageName+".gif", bytes.NewReader(gifBytes))
 	}()
 }

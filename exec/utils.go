@@ -22,9 +22,24 @@ func getImageFromMessage(m *discordgo.MessageCreate) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("Invalid URL provided")
 		}
-
 		return repliedMessage.Content, nil
 	}
 
-	return "", fmt.Errorf("You need to provide a valid image or URL")
+	return "", nil
+}
+
+func getImageNameFromMessage(m *discordgo.MessageCreate) string {
+	if len(m.Attachments) == 1 {
+		return m.Attachments[0].Filename
+	}
+
+	repliedMessage := m.ReferencedMessage
+	if repliedMessage != nil {
+		if len(repliedMessage.Attachments) == 1 {
+			return repliedMessage.Attachments[0].Filename
+		}
+	}
+
+	// return random name
+	return m.ID[:8]
 }
