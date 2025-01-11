@@ -60,9 +60,6 @@ func Bounce(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 		defer resp.Body.Close()
 
 		// simplified version of https://github.com/esmBot/esmBot/blob/master/natives/bounce.cc
-		vips.LoggingSettings(nil, vips.LogLevelError)
-		vips.Startup(nil)
-		defer vips.Shutdown()
 
 		// Loads directly from the reader
 		image, err := vips.NewImageFromReader(resp.Body)

@@ -13,6 +13,7 @@ import (
 	"fyne.io/fyne/container"
 	"fyne.io/fyne/widget"
 	"github.com/bwmarrin/discordgo"
+	"github.com/davidbyttow/govips/v2/vips"
 )
 
 type Runner interface {
@@ -34,6 +35,11 @@ type CLIMode struct {
 }
 
 func main() {
+	// libvips cannot be stopped and restarted, so just start it once
+	vips.LoggingSettings(nil, vips.LogLevelError)
+	vips.Startup(nil)
+	defer vips.Shutdown()
+
 	noUI := len(os.Args) > 1 && (os.Args[1] == "--noui" || os.Args[1] == "--no-ui")
 
 	var cfg config
