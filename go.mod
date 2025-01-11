@@ -5,6 +5,7 @@ go 1.23.4
 require (
 	fyne.io/fyne v1.4.3
 	github.com/bwmarrin/discordgo v0.28.1
+	github.com/davidbyttow/govips/v2 v2.15.0
 	github.com/otiai10/gosseract/v2 v2.4.1
 )
 
@@ -26,6 +27,5 @@ require (
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
