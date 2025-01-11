@@ -38,3 +38,9 @@ func handleMessageCreate(cfg *config, s *discordgo.Session, m *discordgo.Message
 
 	parseCommand(s, m, strings.TrimPrefix(m.Content, cfg.Prefix))
 }
+
+func messageCreateWrapper(cfg *config) func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	return func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		handleMessageCreate(cfg, s, m)
+	}
+}
