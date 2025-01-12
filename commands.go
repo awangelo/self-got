@@ -43,6 +43,14 @@ func prepareCommands() {
 		Help: "Performs OCR on the given image",
 		Exec: execCommand.Ocr,
 	}.add()
+	command{
+		Name: "delete",
+		Help: "Deletes the given number of messages" + "\n\n" +
+			"Example:" + "\n" + "\\delete 5" + "\n\n" +
+			"Example:" + "\n" + "\\delete all" + "\n\n" +
+			"The deletion will stop if the bot receives the command 'delete stop'",
+		Exec: execCommand.Delete,
+	}.add()
 }
 
 func parseCommand(s *discordgo.Session, m *discordgo.MessageCreate, message string) {
