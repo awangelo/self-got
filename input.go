@@ -10,7 +10,6 @@ import (
 func handleTokenInput(content *fyne.Container, label *widget.Label, cfg *config, onComplete func()) {
 	tokenEntry := widget.NewPasswordEntry()
 	tokenEntry.SetPlaceHolder("token")
-	spacer := layout.NewSpacer()
 
 	saveButton := widget.NewButton("Save", func() {
 		if tokenEntry.Text == "" {
@@ -22,23 +21,33 @@ func handleTokenInput(content *fyne.Container, label *widget.Label, cfg *config,
 		onComplete()
 	})
 
-	buttonContainer := container.NewCenter(saveButton)
-	buttonContainer.Resize(fyne.NewSize(120, saveButton.MinSize().Height))
+	saveButton.Importance = widget.HighImportance
 
-	content.Objects = []fyne.CanvasObject{
+	form := container.NewVBox(
+		widget.NewLabelWithStyle("Creating config", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabel("Enter your Discord token to connect the selfbot:"),
+		container.NewPadded(tokenEntry),
+	)
+
+	paddedContent := container.NewPadded(
 		container.NewVBox(
-			centeredLabel("Config file not found, creating one..."),
-			spacer,
-			tokenEntry,
-			spacer,
-			buttonContainer,
+			form,
+			container.NewHBox(
+				layout.NewSpacer(),
+				saveButton,
+				layout.NewSpacer(),
+			),
 		),
-	}
+	)
+
+	content.Objects = []fyne.CanvasObject{paddedContent}
 	content.Refresh()
 }
 
 func handlePrefixInput(content *fyne.Container, label *widget.Label, cfg *config, onComplete func()) {
 	prefixEntry := widget.NewEntry()
+	prefixEntry.SetPlaceHolder("\\")
+	prefixEntry.Resize(fyne.NewSize(100, 36))
 
 	saveButton := widget.NewButton("Save", func() {
 		cfg.Prefix = "\\"
@@ -50,17 +59,26 @@ func handlePrefixInput(content *fyne.Container, label *widget.Label, cfg *config
 		onComplete()
 	})
 
-	buttonContainer := container.NewCenter(saveButton)
-	buttonContainer.Resize(fyne.NewSize(120, saveButton.MinSize().Height))
+	saveButton.Importance = widget.HighImportance
+	saveButton.Resize(fyne.NewSize(120, 36))
 
-	content.Objects = []fyne.CanvasObject{
+	form := container.NewVBox(
+		widget.NewLabelWithStyle("Command Prefix", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabel("Choose a prefix for bot commands (default is \\):"),
+		container.NewPadded(prefixEntry),
+	)
+
+	paddedContent := container.NewPadded(
 		container.NewVBox(
-			centeredLabel("Configure Prefix (default: \\)"),
-			layout.NewSpacer(),
-			prefixEntry,
-			layout.NewSpacer(),
-			buttonContainer,
+			form,
+			container.NewHBox(
+				layout.NewSpacer(),
+				saveButton,
+				layout.NewSpacer(),
+			),
 		),
-	}
+	)
+
+	content.Objects = []fyne.CanvasObject{paddedContent}
 	content.Refresh()
 }
