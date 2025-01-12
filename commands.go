@@ -23,7 +23,7 @@ func prepareCommands() {
 	command{
 		Name: "info",
 		Help: "Displays running time and memory usage of the selfbot" + "\n\n" +
-			"Example:" + "\n\n" + "HeapAlloc: 18 MB \n Sys: 53 MB",
+			"Example:" + "\n\n" + "HeapAlloc: 18 MB \nSys: 53 MB",
 		Exec: execCommand.Info,
 	}.add()
 	command{
