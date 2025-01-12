@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
@@ -11,9 +9,11 @@ import (
 
 func handleTokenInput(content *fyne.Container, label *widget.Label, cfg *config, onComplete func()) {
 	tokenEntry := widget.NewPasswordEntry()
+	tokenEntry.SetPlaceHolder("token")
+	spacer := layout.NewSpacer()
+
 	saveButton := widget.NewButton("Save", func() {
 		if tokenEntry.Text == "" {
-			fmt.Println("invalid token")
 			return
 		}
 		cfg.Token = tokenEntry.Text
@@ -22,17 +22,16 @@ func handleTokenInput(content *fyne.Container, label *widget.Label, cfg *config,
 		onComplete()
 	})
 
-	// Fixed button width so it doesnt grow
-	saveButtonContainer := container.NewCenter(saveButton)
-	saveButtonContainer.Resize(fyne.NewSize(100, saveButton.MinSize().Height))
+	buttonContainer := container.NewCenter(saveButton)
+	buttonContainer.Resize(fyne.NewSize(120, saveButton.MinSize().Height))
 
 	content.Objects = []fyne.CanvasObject{
 		container.NewVBox(
-			centeredLabel("Enter your token:"),
-			layout.NewSpacer(),
+			centeredLabel("Config file not found, creating one..."),
+			spacer,
 			tokenEntry,
-			layout.NewSpacer(),
-			saveButtonContainer,
+			spacer,
+			buttonContainer,
 		),
 	}
 	content.Refresh()
@@ -40,28 +39,27 @@ func handleTokenInput(content *fyne.Container, label *widget.Label, cfg *config,
 
 func handlePrefixInput(content *fyne.Container, label *widget.Label, cfg *config, onComplete func()) {
 	prefixEntry := widget.NewEntry()
+
 	saveButton := widget.NewButton("Save", func() {
 		cfg.Prefix = "\\"
 		if prefixEntry.Text != "" {
 			cfg.Prefix = prefixEntry.Text
 		}
-
 		content.Objects = []fyne.CanvasObject{label}
 		content.Refresh()
 		onComplete()
 	})
 
-	// Fixed button width so it doesnt grow
-	saveButtonContainer := container.NewCenter(saveButton)
-	saveButtonContainer.Resize(fyne.NewSize(100, saveButton.MinSize().Height))
+	buttonContainer := container.NewCenter(saveButton)
+	buttonContainer.Resize(fyne.NewSize(120, saveButton.MinSize().Height))
 
 	content.Objects = []fyne.CanvasObject{
 		container.NewVBox(
-			centeredLabel("Please enter your prefix, default is \"\\\" (e.g. \\help):"),
+			centeredLabel("Configure Prefix (default: \\)"),
 			layout.NewSpacer(),
 			prefixEntry,
 			layout.NewSpacer(),
-			saveButtonContainer,
+			buttonContainer,
 		),
 	}
 	content.Refresh()

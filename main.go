@@ -79,9 +79,6 @@ func (u *UIMode) run() error {
 		err := u.cfg.loadConfig()
 		switch {
 		case os.IsNotExist(err):
-			fmt.Println("config file not found, creating one")
-			u.label.SetText("Config file not found, creating one...")
-
 			tokenDone := make(chan struct{})
 			prefixDone := make(chan struct{})
 
@@ -91,7 +88,6 @@ func (u *UIMode) run() error {
 					if err != nil {
 						log.Fatal(err)
 					}
-					fmt.Println("config file created")
 					close(prefixDone)
 				})
 				close(tokenDone)
@@ -102,31 +98,27 @@ func (u *UIMode) run() error {
 
 		case err != nil:
 			log.Fatal(err)
-		default:
-			fmt.Println("config file found")
 		}
 
 		if !u.cfg.isValid() {
-			log.Fatal("config file is invalid")
+			u.label.SetText("Config file is invalid")
+			time.Sleep(2 * time.Second)
 			return
 		}
 
-		fmt.Println("testing token...")
 		u.label.SetText("Testing token...")
-
 		u.dg, err = createSession(u.cfg)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		u.label.SetText("Token is valid, connecting to Discord...")
-
+		u.label.SetText("Connecting to Discord...")
 		if err := connectToWS(u.dg); err != nil {
 			log.Fatal(err)
 		}
 
+		u.label.SetText("onnected")
 		u.loginTime = time.Now()
-		u.label.SetText("Connected, close this window to exit")
 
 		prepareCommands()
 		u.dg.AddHandler(messageCreateWrapper(u.cfg))
@@ -186,6 +178,13 @@ func finalWindow(w fyne.Window) {
 	)
 
 	helpLabel := widget.NewLabel("Select a command to see its help")
+	helpLabel.Wrapping = fyne.TextWrapWord
+	helpContainer := container.NewVBox(helpLabel)
+	helpBorder := container.NewBorder(
+		widget.NewLabelWithStyle("Command Help", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		nil, nil, nil,
+		helpContainer,
+	)
 
 	// Update the help text when a command is selected
 	list.OnSelected = func(id widget.ListItemID) {
@@ -193,7 +192,7 @@ func finalWindow(w fyne.Window) {
 	}
 
 	// Horizontal split to hold the list and the help text
-	split := container.NewHSplit(list, helpLabel)
+	split := container.NewHSplit(list, helpBorder)
 	split.Offset = 0.3
 
 	w.SetContent(split)
