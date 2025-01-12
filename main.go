@@ -8,10 +8,10 @@ import (
 	"syscall"
 	"time"
 
-	"fyne.io/fyne"
-	"fyne.io/fyne/app"
-	"fyne.io/fyne/container"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	"github.com/bwmarrin/discordgo"
 	"github.com/davidbyttow/govips/v2/vips"
 )
@@ -59,12 +59,15 @@ func main() {
 func NewUI(cfg *config) *UIMode {
 	a := app.New()
 	w := a.NewWindow("self got")
-	setupWindow(w)
+	w.SetMaster()
+	w.Resize(fyne.NewSize(600, 400))
+	w.SetFixedSize(true)
+	w.CenterOnScreen()
 
 	return &UIMode{
 		cfg:    cfg,
 		window: w,
-		label:  centeredLabel("Trying to find the config file..."),
+		label:  centeredLabel("Starting..."),
 	}
 }
 
@@ -164,13 +167,6 @@ func (c *CLIMode) run() error {
 	<-sc
 
 	return nil
-}
-
-func setupWindow(w fyne.Window) {
-	w.SetMaster()
-	w.Resize(fyne.NewSize(600, 400))
-	w.SetFixedSize(true)
-	w.CenterOnScreen()
 }
 
 func finalWindow(w fyne.Window) {

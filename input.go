@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"fyne.io/fyne"
-	"fyne.io/fyne/container"
-	"fyne.io/fyne/layout"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/widget"
 )
 
 func handleTokenInput(content *fyne.Container, label *widget.Label, cfg *config, onComplete func()) {
