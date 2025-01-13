@@ -17,6 +17,8 @@ A Discord selfbot with a graphical user interface built in Go.
 - **bounce** - Creates a bouncing GIF animation from an image
 - **remind** - Sets a reminder after specified duration
 - **ocr** - Performs optical character recognition on images
+- **delete** - Delete messages in the given channel
+- **icon** - Extracts the avatar of a mentioned\replied user
 
 ## Installation
 
@@ -52,6 +54,8 @@ These settings are saved to `config.txt`
    - `\bounce [image/url]` - Create bouncing GIF
    - `\remind [duration] [message]` - Set a reminder
    - `\ocr [image]` - Extract text from image
+   - `\delete [n/all]` - Delete `n` or `all` messages in a channel
+   - `\icon @user` - Extract the user avatar
 
 ### Usage Notes for Image Commands
 
