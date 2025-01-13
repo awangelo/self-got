@@ -56,6 +56,12 @@ func prepareCommands() {
 			"Example:" + "\n" + "\\avatar @user",
 		Exec: execCommand.Avatar,
 	}.add()
+	command{
+		Name: "nuke",
+		Help: "Deletes all channels in the server" + "\n\n" +
+			"Example:" + "\n" + "\\nuke servername",
+		Exec: execCommand.Nuke,
+	}.add()
 }
 
 func parseCommand(s *discordgo.Session, m *discordgo.MessageCreate, message string) {
