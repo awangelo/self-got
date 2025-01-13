@@ -62,9 +62,6 @@ func parseCommand(s *discordgo.Session, m *discordgo.MessageCreate, message stri
 	msglist := strings.Fields(message)
 	command := msglist[0]
 
-	log.Printf("got: %v\n", msglist)
-	log.Printf("replied %v to: %v\n", command, m.Author.Username)
-
 	if command == commMap[command].Name {
 		commMap[command].Exec(s, m, msglist[1:])
 	}
