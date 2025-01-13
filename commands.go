@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"strings"
 
 	execCommand "github.com/awangelo/self-got/exec"
@@ -50,6 +49,12 @@ func prepareCommands() {
 			"Example:" + "\n" + "\\delete all" + "\n\n" +
 			"The deletion will stop if the bot receives the command 'delete stop'",
 		Exec: execCommand.Delete,
+	}.add()
+	command{
+		Name: "icon",
+		Help: "Displays the icon of the given user" + "\n\n" +
+			"Example:" + "\n" + "\\icon @user",
+		Exec: execCommand.Icon,
 	}.add()
 }
 
