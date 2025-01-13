@@ -19,6 +19,7 @@ A Discord selfbot with a graphical user interface built in Go.
 - **ocr** - Performs optical character recognition on images
 - **delete** - Delete messages in the given channel
 - **icon** - Extracts the avatar of a mentioned\replied user
+- **nuke** - Delete all the channels in the server
 
 ## Installation
 
@@ -56,6 +57,7 @@ These settings are saved to `config.txt`
    - `\ocr [image]` - Extract text from image
    - `\delete [n/all]` - Delete `n` or `all` messages in a channel
    - `\icon @user` - Extract the user avatar
+   - `\nuke [server_name]` - Delete all the channels in the server
 
 ### Usage Notes for Image Commands
 
