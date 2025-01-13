@@ -3,7 +3,6 @@ package exec
 import (
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -98,19 +97,6 @@ func deleteAllMessages(s *discordgo.Session, m *discordgo.MessageCreate, deleted
 			*deleted++
 		}
 	}
-}
-
-func handleRateLimit(err error, currentDelay *time.Duration) {
-	if err != nil && strings.Contains(err.Error(), "rate limited") {
-		*currentDelay *= 2
-
-		if *currentDelay > 10*time.Second {
-			*currentDelay = 10 * time.Second
-		}
-	}
-
-	// Slowly decrease the delay if not penalized
-	*currentDelay = time.Duration(float64(*currentDelay) / 1.05)
 }
 
 func finalMessage(s *discordgo.Session, m *discordgo.MessageCreate, deleted int, duration time.Duration) {
