@@ -51,10 +51,10 @@ func prepareCommands() {
 		Exec: execCommand.Delete,
 	}.add()
 	command{
-		Name: "icon",
-		Help: "Displays the icon of the given user" + "\n\n" +
-			"Example:" + "\n" + "\\icon @user",
-		Exec: execCommand.Icon,
+		Name: "avatar",
+		Help: "Displays the avatar of the given user" + "\n\n" +
+			"Example:" + "\n" + "\\avatar @user",
+		Exec: execCommand.Avatar,
 	}.add()
 }
 

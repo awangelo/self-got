@@ -4,7 +4,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func Icon(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
+func Avatar(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 	if len(args) > 1 {
 		s.ChannelMessageSend(m.ChannelID, "Too many arguments")
 		return
