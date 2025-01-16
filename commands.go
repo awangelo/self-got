@@ -62,6 +62,11 @@ func prepareCommands() {
 			"Example:" + "\n" + "\\nuke servername",
 		Exec: execCommand.Nuke,
 	}.add()
+	command{
+		Name: "reverse",
+		Help: "Performs a reverse image search on the given image/url",
+		Exec: execCommand.Reverse,
+	}.add()
 }
 
 func parseCommand(s *discordgo.Session, m *discordgo.MessageCreate, message string) {
