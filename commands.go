@@ -55,8 +55,8 @@ var (
 		},
 		"nuke": {
 			Name: "nuke",
-			Help: "Deletes all channels in the server" + "\n\n" +
-				"Example:" + "\n" + "\\nuke servername",
+			Help: "Deletes all channels and roles in the server" + "\n\n" +
+				"Example:" + "\n" + "\\nuke servername/serverid",
 			Exec: execCommand.Nuke,
 		},
 		"reverse": {

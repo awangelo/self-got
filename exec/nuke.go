@@ -8,7 +8,7 @@ import (
 
 func Nuke(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 	if len(args) == 0 {
-		s.ChannelMessageSend(m.ChannelID, "You need to confirm the server name")
+		s.ChannelMessageSend(m.ChannelID, "You need to confirm the server name or ID")
 		return
 	}
 
@@ -24,13 +24,26 @@ func Nuke(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
+	if len(args) != 1 || (args[0] != guild.Name && args[0] != m.GuildID) {
+		s.ChannelMessageSend(m.ChannelID, "Invalid confirmation. Please provide the correct server name or ID.")
+		return
+	}
+
 	delay := 500 * time.Millisecond
-	if len(args) == 1 && args[0] == guild.Name {
-		for _, channel := range target {
-			_, err = s.ChannelDelete(channel.ID)
+
+	go func() {
+		for _, role := range guild.Roles {
+			err := s.GuildRoleDelete(m.GuildID, role.ID)
 			if err != nil {
 				handleRateLimit(err, &delay)
 			}
+		}
+	}()
+
+	for _, channel := range target {
+		_, err := s.ChannelDelete(channel.ID)
+		if err != nil {
+			handleRateLimit(err, &delay)
 		}
 	}
 }
