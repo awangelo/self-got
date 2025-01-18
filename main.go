@@ -120,7 +120,6 @@ func (u *UIMode) run() error {
 		u.label.SetText("onnected")
 		u.loginTime = time.Now()
 
-		prepareCommands()
 		u.dg.AddHandler(messageCreateWrapper(u.cfg))
 		finalWindow(u.window)
 	}()
@@ -151,7 +150,6 @@ func (c *CLIMode) run() error {
 	}
 
 	c.loginTime = time.Now()
-	prepareCommands()
 	c.dg.AddHandler(messageCreateWrapper(c.cfg))
 
 	sc := make(chan os.Signal, 1)
