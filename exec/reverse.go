@@ -7,12 +7,17 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var urls = map[string]string{
-	"lens":   "https://lens.google.com/uploadbyurl?url=",
-	"tineye": "https://tineye.com/search?url=",
-	"yandex": "https://yandex.com/images/search?url=",
-	"anime":  "https://trace.moe/?url=",
-	"sauce":  "https://saucenao.com/search.php?url=",
+type urlEntry struct {
+	Name string
+	URL  string
+}
+
+var urls = []urlEntry{
+	{Name: "lens", URL: "https://lens.google.com/uploadbyurl?url="},
+	{Name: "tineye", URL: "https://tineye.com/search?url="},
+	{Name: "yandex", URL: "https://yandex.com/images/search?url="},
+	{Name: "anime", URL: "https://trace.moe/?url="},
+	{Name: "sauce", URL: "https://saucenao.com/search.php?url="},
 }
 
 func Reverse(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
@@ -32,12 +37,12 @@ func Reverse(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 		return
 	}
 
-	for n, url := range urls {
-		go func(url string) {
+	for _, entry := range urls {
+		go func(entry urlEntry) {
 			var cmd *exec.Cmd
-			var finalUrl = url + image
+			finalUrl := entry.URL + image
 
-			if n == "yandex" {
+			if entry.Name == "yandex" {
 				finalUrl += "&rpt=imageview"
 			}
 
@@ -50,6 +55,6 @@ func Reverse(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, "Failed to open URL: "+err.Error())
 			}
-		}(url)
+		}(entry)
 	}
 }
