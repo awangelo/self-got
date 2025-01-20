@@ -2,7 +2,7 @@
 
 A Discord selfbot with a graphical user interface built in Go.
 
-![help](https://files.catbox.moe/unuqw0.png)
+![help](https://files.catbox.moe/ib7viw.png)
 ## Features
 
 - Graphical user interface using Fyne toolkit
@@ -18,8 +18,9 @@ A Discord selfbot with a graphical user interface built in Go.
 - **remind** - Sets a reminder after specified duration
 - **ocr** - Performs optical character recognition on images
 - **delete** - Delete messages in the given channel
-- **icon** - Extracts the avatar of a mentioned\replied user
+- **avatar** - Extracts the avatar of a mentioned\replied user
 - **nuke** - Delete all the channels in the server
+- **reverse** - Searches and open the reverse image search of the image
 
 ## Installation
 
@@ -56,8 +57,9 @@ These settings are saved to `config.txt`
    - `\remind [duration] [message]` - Set a reminder
    - `\ocr [image]` - Extract text from image
    - `\delete [n/all]` - Delete `n` or `all` messages in a channel
-   - `\icon @user` - Extract the user avatar
+   - `\avatar @user` - Extract the user avatar
    - `\nuke [server_name]` - Delete all the channels in the server
+   - `\reverse [image/url]` - Search the image on reverse image search
 
 ### Usage Notes for Image Commands
 
