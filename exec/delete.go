@@ -42,6 +42,7 @@ func Delete(s *discordgo.Session, m *discordgo.MessageCreate, args []string) {
 			s.ChannelMessageSend(m.ChannelID, "Invalid number of messages")
 			return
 		}
+		count++ // delete sent message as well
 		if count > 100 {
 			count = 100
 		}
