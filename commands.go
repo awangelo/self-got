@@ -16,6 +16,11 @@ type command struct {
 
 var (
 	commMap = map[string]command{
+		"help": {
+			Name: "help",
+			Help: "Displays the list of commands",
+			Exec: execCommand.Help,
+		},
 		"info": {
 			Name: "info",
 			Help: "Displays running time and memory usage of the selfbot" + "\n\n" +
